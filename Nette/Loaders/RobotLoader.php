@@ -23,7 +23,7 @@ use Nette,
  * @copyright  Copyright (c) 2004, 2010 David Grudl
  * @package    Nette\Loaders
  */
-class RobotLoader extends AutoLoader
+class RobotLoader extends Nette\Object
 {
 	/** @var array */
 	public $scanDirs;
@@ -78,8 +78,18 @@ class RobotLoader extends AutoLoader
 		} else {
 			$this->rebuild();
 		}
+		spl_autoload_register(array($this, 'tryLoad'));
+	}
 
-		parent::register();
+
+
+	/**
+	 * Unregister autoloader.
+	 * @return bool
+	 */
+	public function unregister()
+	{
+		return spl_autoload_unregister(array($this, 'tryLoad'));
 	}
 
 

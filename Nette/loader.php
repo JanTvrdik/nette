@@ -143,7 +143,6 @@ require __DIR__ . '/Forms/Renderers/ConventionalRenderer.php';
 require __DIR__ . '/Forms/Renderers/InstantClientScript.php';
 require __DIR__ . '/Forms/Rule.php';
 require __DIR__ . '/Forms/Rules.php';
-require __DIR__ . '/Loaders/AutoLoader.php';
 require __DIR__ . '/Loaders/LimitedScope.php';
 require __DIR__ . '/Loaders/RobotLoader.php';
 require __DIR__ . '/Mail/MailMimePart.php';
