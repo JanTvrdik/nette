@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test: Nette\Debug notices and warnings.
+ * Test: Nette\Debug notices.
  *
  * @author     David Grudl
  * @category   Nette
@@ -41,15 +41,19 @@ function second($arg1, $arg2)
 function third($arg1)
 {
 	$x++;
-	rename('..', '..');
 }
 
 
-first(10, 'any string');
+try	{
+	first(10, 'any string');
+
+} catch (Exception $e) {
+	T::dump($e);
+}
 
 
 
 __halt_compiler() ?>
 
 ------EXPECT------
-%A%<div id="nette-debug-errors">%A%PHP Notice: Undefined variable: x in %A%PHP Warning: rename(..,..): %A%
+%A%<div id="nette-debug-errors">%A%PHP Notice: Undefined variable: x in %A%

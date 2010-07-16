@@ -22,11 +22,17 @@ Debug::$productionMode = TRUE;
 
 Debug::enable();
 
-$x++;
-rename('..', '..');
+try	{
+	$x++;
+	rename('..', '..');
+
+} catch (Exception $e) {
+	T::dump($e);
+}
 
 
 
 __halt_compiler() ?>
 
 ------EXPECT------
+Exception PhpException: rename(..,..): %a%

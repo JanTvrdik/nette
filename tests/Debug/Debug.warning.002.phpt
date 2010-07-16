@@ -43,7 +43,13 @@ function third($arg1)
 }
 
 
-first(10, 'any string');
+try	{
+	first(10, 'any string');
+
+} catch (Exception $e) {
+	T::dump($e);
+}
+
 
 
 
@@ -52,5 +58,4 @@ __halt_compiler() ?>
 ------EXPECT------
 
 Notice: Undefined variable: x in %a%
-
-Warning: rename(..,..): %a%
+Exception PhpException: rename(..,..): %a%

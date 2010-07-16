@@ -593,15 +593,17 @@ final class Debug
 		if ($severity === E_RECOVERABLE_ERROR || $severity === E_USER_ERROR) {
 			throw new \PhpException($message, 0, $severity, $file, $line, $context);
 
-		} elseif (($severity & error_reporting()) !== $severity) {
+		} elseif (!($severity & error_reporting())) {
 			return FALSE; // calls normal error handler to fill-in error_get_last()
+
+		} elseif ($severity === E_WARNING /*|| $severity === E_NOTICE*/) {
+			throw new \PhpException($message, 0, $severity, $file, $line, $context);
 
 		} elseif (self::$strictMode) {
 			self::_exceptionHandler(new \PhpException($message, 0, $severity, $file, $line, $context), TRUE);
 		}
 
 		static $types = array(
-			E_WARNING => 'Warning',
 			E_USER_WARNING => 'Warning',
 			E_NOTICE => 'Notice',
 			E_USER_NOTICE => 'Notice',
