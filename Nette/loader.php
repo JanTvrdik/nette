@@ -63,3 +63,14 @@ require_once __DIR__ . '/Loaders/NetteLoader.php';
 
 Nette\Loaders\NetteLoader::getInstance()->base = __DIR__;
 Nette\Loaders\NetteLoader::getInstance()->register();
+
+
+function netteErrorHandler($severity, $message, $file, $line, $context)
+{
+	if ($severity === E_RECOVERABLE_ERROR || $severity === E_USER_ERROR || ($severity === E_WARNING && error_reporting() & E_WARNING)) {
+		throw new \PhpException($message, 0, $severity, $file, $line, $context);
+	}
+	return FALSE; // calls normal error handler
+}
+
+set_error_handler('netteErrorHandler');
