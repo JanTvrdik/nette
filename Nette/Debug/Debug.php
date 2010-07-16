@@ -530,7 +530,7 @@ final class Debug
 			if (!headers_sent()) { // for PHP < 5.2.4
 				header('HTTP/1.1 500 Internal Server Error');
 			}
-			self::processException(new \FatalErrorException($error['message'], 0, $error['type'], $error['file'], $error['line'], NULL), TRUE);
+			self::processException(new \PhpException($error['message'], 0, $error['type'], $error['file'], $error['line'], NULL), TRUE);
 		}
 
 
@@ -585,19 +585,19 @@ final class Debug
 	 * @param  int    line number the error was raised at
 	 * @param  array  an array of variables that existed in the scope the error was triggered in
 	 * @return bool   FALSE to call normal error handler, NULL otherwise
-	 * @throws \FatalErrorException
+	 * @throws \PhpException
 	 * @internal
 	 */
 	public static function _errorHandler($severity, $message, $file, $line, $context)
 	{
 		if ($severity === E_RECOVERABLE_ERROR || $severity === E_USER_ERROR) {
-			throw new \FatalErrorException($message, 0, $severity, $file, $line, $context);
+			throw new \PhpException($message, 0, $severity, $file, $line, $context);
 
 		} elseif (($severity & error_reporting()) !== $severity) {
 			return FALSE; // calls normal error handler to fill-in error_get_last()
 
 		} elseif (self::$strictMode) {
-			self::_exceptionHandler(new \FatalErrorException($message, 0, $severity, $file, $line, $context), TRUE);
+			self::_exceptionHandler(new \PhpException($message, 0, $severity, $file, $line, $context), TRUE);
 		}
 
 		static $types = array(

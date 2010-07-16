@@ -37,7 +37,6 @@ class NetteLoader extends AutoLoader
 		'datetime53' => '/Utils/DateTime53.php',
 		'deprecatedexception' => '/Utils/exceptions.php',
 		'directorynotfoundexception' => '/Utils/exceptions.php',
-		'fatalerrorexception' => '/Utils/exceptions.php',
 		'filenotfoundexception' => '/Utils/exceptions.php',
 		'invalidstateexception' => '/Utils/exceptions.php',
 		'ioexception' => '/Utils/exceptions.php',
@@ -197,6 +196,7 @@ class NetteLoader extends AutoLoader
 		'nette\web\user' => '/Web/User.php',
 		'notimplementedexception' => '/Utils/exceptions.php',
 		'notsupportedexception' => '/Utils/exceptions.php',
+		'phpexception' => '/Utils/exceptions.php',
 	);
 
 

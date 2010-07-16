@@ -52,7 +52,7 @@ T::note('after');
 __halt_compiler() ?>
 
 ------EXPECT------
-exception 'FatalErrorException' with message 'Undefined variable: x' in %a%
+exception 'PhpException' with message 'Undefined variable: x' in %a%
 Stack trace:
 #0 %a%: %ns%Debug::_errorHandler(8, '%a%', '%a%', %a%, Array)
 #1 %a%: third(Array)

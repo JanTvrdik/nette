@@ -136,12 +136,11 @@ class DirectoryNotFoundException extends IOException
 
 
 /**
- * The exception that indicates errors that can not be recovered from. Execution of
- * the script should be halted.
+ * The exception that indicates PHP warning.
  * @package    exceptions
  */
 /**/
-class FatalErrorException extends ErrorException
+class PhpException extends ErrorException
 {
 
 	public function __construct($message, $code, $severity, $file, $line, $context)
@@ -154,7 +153,7 @@ class FatalErrorException extends ErrorException
 /**/
 
 /*5.2*
-class FatalErrorException extends Exception
+class PhpException extends Exception
 {
 	private $severity;
 

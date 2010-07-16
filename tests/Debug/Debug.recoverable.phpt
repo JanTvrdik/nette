@@ -76,12 +76,12 @@ __halt_compiler() ?>
 ------EXPECT------
 Invalid argument #1
 
-Exception FatalErrorException: Argument 1 passed to TestClass::test1() must be an array, string given, called in %a%
+Exception PhpException: Argument 1 passed to TestClass::test1() must be an array, string given, called in %a%
 
 Invalid argument #2
 
-Exception FatalErrorException: Argument 1 passed to TestClass::test2() must be an instance of TestClass, string given, called in %a%
+Exception PhpException: Argument 1 passed to TestClass::test2() must be an instance of TestClass, string given, called in %a%
 
 Invalid toString
 
-Exception FatalErrorException: Method TestClass::__toString() must return a string value
+Exception PhpException: Method TestClass::__toString() must return a string value

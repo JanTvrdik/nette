@@ -51,7 +51,7 @@ __halt_compiler() ?>
 ------EXPECT------
 
 Fatal error: Call to undefined function missing_funcion() in %a%
-exception 'FatalErrorException' with message 'Call to undefined function missing_funcion()' in %a%
+exception 'PhpException' with message 'Call to undefined function missing_funcion()' in %a%
 Stack trace:
 #0 [internal function]: %ns%Debug::_shutdownHandler()
 #1 {main}
