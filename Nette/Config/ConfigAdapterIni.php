@@ -59,11 +59,7 @@ final class ConfigAdapterIni implements IConfigAdapter
 			throw new \FileNotFoundException("File '$file' is missing or is not readable.");
 		}
 
-		Nette\Debug::tryError();
 		$ini = parse_ini_file($file, TRUE);
-		if (Nette\Debug::catchError($msg)) {
-			throw new \Exception($msg);
-		}
 
 		$separator = trim(self::$sectionSeparator);
 		$data = array();

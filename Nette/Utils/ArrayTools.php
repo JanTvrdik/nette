@@ -169,10 +169,16 @@ final class ArrayTools
 	 */
 	public static function grep(array $arr, $pattern, $flags = 0)
 	{
-		Debug::tryError();
-		$res = preg_grep($pattern, $arr, $flags);
-		String::catchPregError($pattern);
-		return $res;
+		try {
+			$res = preg_grep($pattern, $arr, $flags);
+			if ($code = preg_last_error()) {
+				throw new RegexpException(RegexpException::$messages[$code] . " (pattern: $pattern)", $code); // run-time error
+			}
+			return $res;
+
+		} catch (\PhpException $e) {
+			throw new RegexpException($e->getMessage() . " in pattern: $pattern"); // compile-time error
+		}
 	}
 
 }
