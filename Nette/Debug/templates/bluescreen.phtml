@@ -10,6 +10,7 @@
  * @package    Nette
  *
  * @param      array     $exception
+ * @param      int       $expanded
  * @param      array     $colophons
  * @param      array     $internals
  * @param      Nette\Application\Application $application
@@ -367,7 +368,7 @@ if (headers_sent()) {
 				</div>
 			<?php endif ?>
 
-			<?php $collapsed = isset($internals[$ex->getFile()]); ?>
+			<?php $collapsed = $expanded !== NULL ?>
 			<?php if (is_file($ex->getFile())): ?>
 			<?php _netteOpenPanel('Source file', $collapsed) ?>
 				<p><strong>File:</strong> <?php echo htmlspecialchars($ex->getFile()) ?> &nbsp; <strong>Line:</strong> <?php echo $ex->getLine() ?></p>
@@ -418,7 +419,7 @@ if (headers_sent()) {
 
 
 					<?php if (isset($row['file']) && is_file($row['file'])): ?>
-						<pre <?php if (!$collapsed || isset($internals[$row['file']])) echo 'class="collapsed"'; else $collapsed = FALSE ?> id="src<?php echo "$level-$key" ?>"><?php _netteDebugPrintCode($row['file'], $row['line']) ?></pre>
+						<pre <?php if (!$collapsed || $expanded !== $key) echo 'class="collapsed"'; else $collapsed = FALSE ?> id="src<?php echo "$level-$key" ?>"><?php _netteDebugPrintCode($row['file'], $row['line']) ?></pre>
 					<?php endif ?>
 
 					</li>

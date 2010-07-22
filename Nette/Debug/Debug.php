@@ -685,11 +685,14 @@ final class Debug
 	 */
 	public static function _paintBlueScreen(\Exception $exception)
 	{
-		$internals = array();
-		foreach (array('Nette\Object', 'Nette\ObjectMixin') as $class) {
-			if (class_exists($class, FALSE)) {
-				$rc = new \ReflectionClass($class);
-				$internals[$rc->getFileName()] = TRUE;
+		$expanded = NULL;
+		$path = NETTE_DIR . DIRECTORY_SEPARATOR; // . 'Utils' . DIRECTORY_SEPARATOR . 'Object';
+		if (strpos($exception->getFile(), $path) === 0) {
+			foreach ($exception->getTrace() as $key => $row) {
+				if (isset($row['file']) && strpos($row['file'], $path) !== 0) {
+					$expanded = $key;
+					break;
+				}
 			}
 		}
 
