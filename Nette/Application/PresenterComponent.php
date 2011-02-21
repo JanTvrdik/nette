@@ -249,7 +249,23 @@ abstract class PresenterComponent extends Nette\ComponentContainer implements IS
 	 */
 	public function signalReceived($signal)
 	{
-		if (!$this->tryCall($this->formatSignalMethod($signal), $this->params)) {
+		$method = $this->formatSignalMethod($signal);
+		$reflection = new Nette\Reflection\MethodReflection($this, $method);
+		if ($reflection->hasAnnotation('secured')) {
+			$params = array();
+			if ($this->params) {
+				foreach ($reflection->getParameters() as $param) {
+					if (isset($this->params[$param->name])) {
+						$params[$param->name] = $this->params[$param->name];
+					}
+				}
+			}
+			if (!isset($this->params[Presenter::CSRF_TOKEN_KEY]) || $this->params[Presenter::CSRF_TOKEN_KEY] !== $this->getPresenter()->getCsrfToken($method, $params)) {
+				throw new BadSignalException("Invalid security token for signal '$signal' in class {$this->reflection->name}.");
+			}
+		}
+
+		if (!$this->tryCall($method, $this->params)) {
 			throw new BadSignalException("There is no handler for signal '$signal' in class {$this->reflection->name}.");
 		}
 	}

@@ -41,6 +41,7 @@ abstract class Presenter extends Control implements IPresenter
 	const SIGNAL_KEY = 'do';
 	const ACTION_KEY = 'action';
 	const FLASH_KEY = '_fid';
+	const CSRF_TOKEN_KEY = '_sec';
 	/**#@-*/
 
 	/** @var string */
@@ -833,6 +834,19 @@ abstract class Presenter extends Control implements IPresenter
 				if ($args) { // convert indexed parameters to named
 					self::argsToParams(get_class($component), $method, $args);
 				}
+
+				$handlerReflection = $reflection->getMethod($method);
+				if ($handlerReflection->hasAnnotation('secured')) {
+					$handlerParams = array();
+					if ($args) {
+						foreach ($handlerReflection->getParameters() as $param) {
+							if (isset($args[$param->name])) {
+								$handlerParams[$param->name] = $args[$param->name];
+							}
+						}
+					}
+					$args[self::CSRF_TOKEN_KEY] = $this->getCsrfToken($method, $handlerParams);
+				}
 			}
 
 			// counterpart of IStatePersistent
@@ -940,6 +954,22 @@ abstract class Presenter extends Control implements IPresenter
 		}
 
 		return $uri . $fragment;
+	}
+
+
+
+	/**
+	 * @param  string
+	 * @param  array
+	 * @return string
+	 */
+	protected function getCsrfToken($method, $params)
+	{
+		$session = $this->getSession('Nette.Application.Presenter/CSRF');
+		if (!isset($session->token)) {
+			$session->token = Nette\String::random();
+		}
+		return substr(md5($method . serialize($params) . $session->token), 0, 8);
 	}
 
 
