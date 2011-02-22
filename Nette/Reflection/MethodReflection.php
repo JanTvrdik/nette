@@ -60,21 +60,62 @@ class MethodReflection extends \ReflectionMethod
 	 * Invokes method using named parameters.
 	 * @param  object
 	 * @param  array
+	 * @param  bool perform validation?
 	 * @return mixed
 	 */
-	public function invokeNamedArgs($object, $args)
+	public function invokeNamedArgs($object, $args, $validate = FALSE)
 	{
+		if ($validate) {
+			$types = $this->getAllowedParametersTypes();
+			Nette\Debug::barDump($types, 'Allowed types');
+		}
+
+		$params = parent::getParameters();
 		$res = array();
 		$i = 0;
-		foreach ($this->getDefaultParameters() as $name => $def) {
+		foreach ($params as $param) {
+			$name = $param->getName();
 			if (isset($args[$name])) { // NULL treats as none value
-				$val = $args[$name];
-				if ($def !== NULL) {
-					settype($val, gettype($def));
+				$value = $args[$name];
+				if ($validate && isset($types[$i])) {
+					$type = gettype($value);
+					$valid = FALSE;
+					$converted = FALSE;
+					foreach ($types[$i] as $allowedType) {
+						if ($type === 'string') {
+							$converted = TRUE;
+							if ($allowedType === 'integer' && $value === (string)(int) $value) {
+								$value = (int) $value;
+							} elseif ($allowedType === 'double' && is_numeric($value)) {
+								$value = (float) $value;
+							} elseif ($allowedType === 'boolean' && ($value === '1' || $value === '0')) {
+								$value = (bool) $value;
+							} elseif ($allowedType === 'true' && $value === '1') {
+								$value = TRUE;
+							} elseif ($allowedType === 'false' && $value === '0') {
+								$value = FALSE;
+							} else {
+								$converted = FALSE;
+							}
+						}
+
+						if ($converted || $type === $allowedType || ($allowedType === 'true' && $value === TRUE) || ($allowedType === 'false') && $value === FALSE) {
+							$valid = TRUE;
+							break;
+						}
+					}
+					if (!$valid) throw new \InvalidArgumentException("Invalid value for parameter $name. Expected " . implode(' or ', $types[$i]));
 				}
-				$res[$i++] = $val;
+				$res[$i++] = $value;
+
 			} else {
-				$res[$i++] = $def;
+				if ($param->isDefaultValueAvailable()) {
+					$res[$i++] = $param->getDefaultValue();
+				} elseif ($validate && isset($types[$i]) && !in_array('null', $types[$i])) {
+					throw new \InvalidArgumentException("Parameter $name is required!");
+				} else {
+					$res[$i++] = NULL;
+				}
 			}
 		}
 		return $this->invokeArgs($object, $res);
@@ -182,6 +223,51 @@ class MethodReflection extends \ReflectionMethod
 	public function getAnnotations()
 	{
 		return AnnotationsParser::getAll($this);
+	}
+
+
+	/**
+	 * Returns allowed types for parameters.
+	 * @return array
+	 */
+	public function getAllowedParametersTypes()
+	{
+		$annotations = $this->getAnnotations();
+		$types = array();
+		if (!isset($annotations['param'])) return $types;
+		$i = 0;
+		foreach ($annotations['param'] as $value) {
+			if (($pos = strpos($value, ' ')) !== FALSE) $value = substr($value, 0, $pos);
+			$tmp = explode('|', strtolower($value));
+			foreach ($tmp as $k => $v) {
+				switch ($v) {
+					case 'mixed':
+						$tmp = NULL;
+						break 2;
+					case 'int':
+						$tmp[$k] = 'integer';
+						break;
+					case 'bool':
+						$tmp[$k] = 'boolean';
+						break;
+					case 'float':
+						$tmp[$k] = 'double';
+						break;
+					/*case NULL:
+						$tmp[$k] = 'null';
+						break;
+					case TRUE:
+						$tmp[$k] = 'true';
+						break;
+					case FALSE:
+						$tmp[$k] = 'false';
+						break;*/
+
+				}
+			}
+			$types[$i++] = $tmp;
+		}
+		return $types;
 	}
 
 

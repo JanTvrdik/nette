@@ -86,15 +86,20 @@ abstract class PresenterComponent extends Nette\ComponentContainer implements IS
 	 * Calls public method if exists.
 	 * @param  string
 	 * @param  array
+	 * @param  bool
 	 * @return bool  does method exist?
 	 */
-	protected function tryCall($method, array $params)
+	protected function tryCall($method, array $params, $validate = FALSE)
 	{
 		$rc = $this->getReflection();
 		if ($rc->hasMethod($method)) {
 			$rm = $rc->getMethod($method);
 			if ($rm->isPublic() && !$rm->isAbstract() && !$rm->isStatic()) {
-				$rm->invokeNamedArgs($this, $params);
+				try {
+					$rm->invokeNamedArgs($this, $params, $validate);
+				} catch (\InvalidArgumentException $e) {
+					throw new BadRequestException($e->getMessage(), NULL, $e);
+				}
 				return TRUE;
 			}
 		}
@@ -249,7 +254,7 @@ abstract class PresenterComponent extends Nette\ComponentContainer implements IS
 	 */
 	public function signalReceived($signal)
 	{
-		if (!$this->tryCall($this->formatSignalMethod($signal), $this->params)) {
+		if (!$this->tryCall($this->formatSignalMethod($signal), $this->params, $this->getPresenter()->validateParams)) {
 			throw new BadSignalException("There is no handler for signal '$signal' in class {$this->reflection->name}.");
 		}
 	}
