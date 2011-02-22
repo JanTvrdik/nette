@@ -62,6 +62,9 @@ abstract class Presenter extends Control implements IPresenter
 	/** @var bool  use absolute Urls or paths? */
 	public $absoluteUrls = FALSE;
 
+	/** @var bool  automatically validate parameters by @param annotation */
+	public $validateParams = FALSE;
+
 	/** @var array */
 	private $globalParams;
 
@@ -161,7 +164,7 @@ abstract class Presenter extends Control implements IPresenter
 				throw new \InvalidStateException("Method $class::startup() or its descendant doesn't call parent::startup().");
 			}
 			// calls $this->action<Action>()
-			$this->tryCall($this->formatActionMethod($this->getAction()), $this->params);
+			$this->tryCall($this->formatActionMethod($this->getAction()), $this->params, $this->validateParams);
 
 			if ($this->autoCanonicalize) {
 				$this->canonicalize();
@@ -177,7 +180,7 @@ abstract class Presenter extends Control implements IPresenter
 			// RENDERING VIEW
 			$this->beforeRender();
 			// calls $this->render<View>()
-			$this->tryCall($this->formatRenderMethod($this->getView()), $this->params);
+			$this->tryCall($this->formatRenderMethod($this->getView()), $this->params, $this->validateParams);
 			$this->afterRender();
 
 			// save component tree persistent state
