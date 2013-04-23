@@ -58,7 +58,7 @@ class ContainerPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	 */
 	public function getPanel()
 	{
-		$services = $this->getContainerProperty('factories');
+		$services = array();
 		$factories = array();
 		foreach (Nette\Reflection\ClassType::from($this->container)->getMethods() as $method) {
 			if (preg_match('#^create(Service)?_*(.+)\z#', $method->getName(), $m)) {
